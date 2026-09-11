@@ -30,7 +30,7 @@ export default class Schema {
         return this
     }
 
-    integer = (field, PK = false, increment = false) => {
+    integer = (field, PK = "", increment = "") => {
         // this.fields.push(`${field} INTEGER ${PK ? 'PRIMARY KEY' : ''} ${increment ? 'AUTOINCREMENT' : ''}`)
         
         this.tablename.fields.push(`${field} INTEGER ${PK ? 'PRIMARY KEY' : ''} ${increment ? 'AUTOINCREMENT' : ''}`)
@@ -54,6 +54,7 @@ export default class Schema {
 
     #model = async (tabledata) => {
         console.log("generate model here")
+        console.log(tabledata)
 
 
         const dir = path.join(process.cwd(), "models")
@@ -67,10 +68,13 @@ export default class Schema {
         // console.log(fields)
 
         const content = dedent(`
+        import Model from "../src/Model.js"
+
         export default class ${tabledata.model} extends Model {
             constructor() {
                 this.fields = ${JSON.stringify(fields)}
             }
+
         }
         `)
 
@@ -85,7 +89,7 @@ export default class Schema {
             // console.log("schema", this.relationships)
 
             this.relationships.map((ele) => {
-                console.log("this ele", ele)
+               // console.log("this ele", ele)
                 /*console.log("matching", this.schema[i].tableName, ele[this.schema[i].tableName])
                 console.log("whole table", this.schema[i].fields.push(ele[this.schema[i].tableName]))*/
                 if (ele[this.schema[i].tableName] != undefined) {
@@ -94,7 +98,7 @@ export default class Schema {
             })
 
 
-            console.log("fields", this.schema[i].tableName, this.schema[i].fields)
+            // console.log("fields", this.schema[i].tableName, this.schema[i].fields)
 
             const statement = `SELECT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='${this.schema[i].tableName}')`
             const exists = this._database.exec(statement)
@@ -125,11 +129,9 @@ export default class Schema {
 function dedent(str) {
   const lines = str.split("\n");
 
-  // Remove empty first/last lines
   while (lines.length && lines[0].trim() === "") lines.shift();
   while (lines.length && lines[lines.length - 1].trim() === "") lines.pop();
 
-  // Find the smallest indentation
   const indent = Math.min(
     ...lines
       .filter(line => line.trim())

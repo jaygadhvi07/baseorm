@@ -1,9 +1,10 @@
 import DB from "./src/Database.js"
+import User from "./models/User.js"
 
 DB.migration("databasefile.db", (schema) => {
 
     schema.table("users", "User")
-        .integer("id")
+        .integer("id", true , true)
         .string("name")
         .string("email")
         .bool("active")
@@ -11,7 +12,7 @@ DB.migration("databasefile.db", (schema) => {
         .hasMany("posts")
 
     schema.table("posts", "Post")
-        .integer("id")
+        .integer("id", true, true)
         .string("title")
         .string("description")
         .text("content")
@@ -21,3 +22,5 @@ DB.migration("databasefile.db", (schema) => {
     schema.create()
 })
 
+const user = new User
+user.posts.
