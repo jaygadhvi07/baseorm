@@ -1,0 +1,24 @@
+{
+  "name": "baseorm",
+  "version": "0.0.1",
+  "description": "basic ORM for SQLite",
+  "homepage": "https://github.com/jaygadhvi07/baseorm#readme",
+  "bugs": {
+    "url": "https://github.com/jaygadhvi07/baseorm/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jaygadhvi07/baseorm.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migration": "node index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3"
+  }
+}
