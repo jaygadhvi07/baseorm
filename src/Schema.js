@@ -18,6 +18,7 @@ export default class Schema {
             tableName,
             model,
             fields: [],
+            hasMany: [],
         }
 
         this.schema.push(this.tablename)
@@ -52,20 +53,21 @@ export default class Schema {
         return schema 
     }
 
-    #model = async (tabledata) => {
+    #model = async (schemas) => {
         console.log("generate model here")
-        console.log(tabledata)
-
 
         const dir = path.join(process.cwd(), "models")
         await fs.mkdir(dir, { recursive: true })
 
-        let fields = []
+        schemas.map((ele) => {
+            console.log(ele)
+        })
+
+        /*let fields = []
+
         tabledata.fields.map((ele) => {
             fields.push(String(ele.split(" ")[0]))
         })
-
-        // console.log(fields)
 
         const content = dedent(`
         import Model from "../src/Model.js"
@@ -74,31 +76,32 @@ export default class Schema {
             constructor() {
                 this.fields = ${JSON.stringify(fields)}
             }
-
         }
         `)
 
-        await fs.writeFile(path.join(dir, `${tabledata.model}.js`), content, 'utf-8')
+        await fs.writeFile(path.join(dir, `${tabledata.model}.js`), content, 'utf-8')*/
     }
 
     create = () => {
 
         for(let i = 0; i < this.schema.length; i++) {
-
-            // console.log("schema", this.schema[i])
-            // console.log("schema", this.relationships)
-
             this.relationships.map((ele) => {
-               // console.log("this ele", ele)
-                /*console.log("matching", this.schema[i].tableName, ele[this.schema[i].tableName])
-                console.log("whole table", this.schema[i].fields.push(ele[this.schema[i].tableName]))*/
                 if (ele[this.schema[i].tableName] != undefined) {
+                    // console.log("this table",  ele)
+                    const tablehasmany  = ele[this.schema[i].tableName].split(" ")[ele[this.schema[i].tableName].split(" ").length - 1].split("(")[0]
+                    // console.log("tablehasmany", tablehasmany)
+
+                    this.schema.map((table) => {
+                        // console.log("table", table.tableName == tablehasmany)
+                        if(table.tableName === tablehasmany) {
+                            table.hasMany.push(ele)
+                            return table
+                        }
+                    })
+
                     this.schema[i].fields.push(ele[this.schema[i].tableName])
                 }
             })
-
-
-            // console.log("fields", this.schema[i].tableName, this.schema[i].fields)
 
             const statement = `SELECT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='${this.schema[i].tableName}')`
             const exists = this._database.exec(statement)
@@ -108,21 +111,18 @@ export default class Schema {
             }
 
             const schema = `CREATE TABLE IF NOT EXISTS ${this.schema[i].tableName} (`+ this.schema[i].fields.join(", ") + `)`
-            console.log("schema", schema)
-
             this._database.exec(schema)
-            this.#model(this.schema[i])
         }
+
+        // console.log("this schemas", this.schema)
+        this.#model(this.schema)
 
         return this
     }
 
     hasMany = (tablename) => {
         this.relationships.push({ [tablename] : `FOREIGN KEY (${this.tablename.tableName + '_id'}) REFERENCES ${this.tablename.tableName}(id)`})
-    }
-
-    belongsTo = () => {
-
+        return this
     }
 }
 

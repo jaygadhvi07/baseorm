@@ -22,5 +22,5 @@ DB.migration("databasefile.db", (schema) => {
     schema.create()
 })
 
-const user = new User
-user.posts.
+// const user = new User
+// user.posts.all()
